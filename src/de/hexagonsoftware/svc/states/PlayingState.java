@@ -114,7 +114,7 @@ public class PlayingState implements IState {
                 } else {
                 	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()], map[row+col].getType(), map[row+col]);
                 	if (map[row+col].hasBuilding(new CityBuilding(x, y))) {
-                		drawIcon(g, Icons.CITY, x, y, 48);
+                		drawIcon(g, Icons.CITY, map[row+col].getCvsX(), map[row+col].getCvsY(), 48);
                 	}
                 }
             }
@@ -142,11 +142,18 @@ public class PlayingState implements IState {
         }
         
         hex.draw(g2d, x, y, 0, color, true);
-        hex.draw(g2d, x, y, 2, 0x000000, false);
+        hex.draw(g2d, x, y, 2, color, false);
         g.setColor(Color.DARK_GRAY);
         int feldX = x- (int)g.getFontMetrics().getStringBounds(String.valueOf(feld), g).getWidth()/2;
         g.setFont(new Font("Courier New", Font.ITALIC, 18));
         g.drawString(String.valueOf(feld), x, y);
+        
+        if (tile == null)
+        	return;
+        
+        tile.setCvsX(x);
+        tile.setCvsY(y);
+       // System.out.println("a");
 	}
 
 	public void drawIcon(Graphics g, IIcon icon, int x, int y, int scale) {
@@ -180,7 +187,17 @@ public class PlayingState implements IState {
 	}
 	
 	@Override
-	public void update() {		
+	public void update() {
+		for (Tile t : map) {
+			if (t == null)
+				continue; 
+			
+			if (t.hasBuilding(new CityBuilding(t.getX(), t.getY()))) {
+				if (stateAliveTicks % 10000 == 0)
+					pRes.addResource("WOOD", 1);
+			}
+		}
+		
 		stateAliveTicks++;
 	}
 	

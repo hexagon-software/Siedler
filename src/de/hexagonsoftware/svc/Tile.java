@@ -4,7 +4,7 @@ import de.hexagonsoftware.svc.states.playing.buildings.CityBuilding;
 import de.hexagonsoftware.svc.states.playing.buildings.IBuilding;
 
 public class Tile {
-	private int x, y, type;
+	private int x, y, cvsx, cvsy, type;
 	private IBuilding building;
 	private int buildCounter = 0;
 	
@@ -31,4 +31,15 @@ public class Tile {
 	public void addBuilding(IBuilding building) {
 		this.building = building;
 	}
+
+	public void setCvsX(int x) {
+		this.cvsx = x;
+	}
+	
+	public void setCvsY(int y) {
+		this.cvsy = y;
+	}
+	
+	public int getCvsX() { return this.cvsx; }
+	public int getCvsY() { return this.cvsy; }
 }
