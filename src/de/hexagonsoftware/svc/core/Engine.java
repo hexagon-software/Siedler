@@ -1,7 +1,7 @@
 package de.hexagonsoftware.svc.core;
 
+import de.hexagonsoftware.svc.Game;
 import de.hexagonsoftware.svc.core.graphics.HexagonGraphicsEngine;
-
 public class Engine {
 	private EngineDefaults ed = new EngineDefaults();
 	
@@ -15,7 +15,7 @@ public class Engine {
 				Integer.parseInt(ed.GRAPHICS_DEFAULTS.get("WIDTH")),
 				Integer.parseInt(ed.GRAPHICS_DEFAULTS.get("HEIGHT"))
 		};
-		this.hge = new HexagonGraphicsEngine(res, "Die Siedler von Catan", this);
+		this.hge = new HexagonGraphicsEngine(res, "Siedler "+((Game) game).version, this);
 	}
 	
 	public String getInfo() {

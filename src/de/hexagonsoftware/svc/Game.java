@@ -6,12 +6,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.hexagonsoftware.svc.core.Engine;
 import de.hexagonsoftware.svc.core.IGame;
+import de.hexagonsoftware.svc.input.Mouse;
 import de.hexagonsoftware.svc.polys.DynHexagon;
 import de.hexagonsoftware.svc.polys.Hexagon;
+import de.hexagonsoftware.svc.states.IState;
 
 /**
  * Die Siedler von Catan Java Implementation.
@@ -28,11 +31,12 @@ public class Game implements IGame {
 	
 	private StateMachine stateMachine;
 	
-	public String version = "0.1.0";
+	public String version = "0.1.0 ALPHA";
 	public int size;
 	
 	public Game(int size) {
 		this.engine = new Engine(this);
+		this.engine.getHGE().getGameWindow().addMouseListener(new Mouse(this));
 		this.size = size;
 		System.out.println("[SVC-client][INFO] (engine-info) "+engine.getInfo());	
 		System.out.println("[SVC-client][INFO] Starte Spiel...");
@@ -68,6 +72,10 @@ public class Game implements IGame {
 	
 	public void update() {
 		this.stateMachine.getActiveState().update();
+	}
+	
+	public void handleMouse(MouseEvent e) {
+		stateMachine.activeState.mousePressed(e.getX(), e.getY());
 	}
 	
 	public Engine getEngine() { return this.engine; }

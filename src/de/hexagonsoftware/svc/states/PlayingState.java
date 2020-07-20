@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -39,6 +40,8 @@ public class PlayingState implements IState {
 	public Resources res;
 	private PlayerResources pRes;
 	private Buildings buildings;
+	
+	public int mousePressX, mousePressY = 0;
 	
 	public PlayingState(Game game) {
 		this.game = game;
@@ -76,7 +79,7 @@ public class PlayingState implements IState {
 		
 		g.setColor(Color.BLACK);
 		g.setFont(new Font("Courier New", Font.BOLD, 25));
-		g.drawString("\"Die Siedler von Catan\" in Java", 1, 1+g.getFontMetrics().getHeight());
+		g.drawString("\"Siedler\" (Java) ", 1, 1+g.getFontMetrics().getHeight());
 		g.drawString("Version "+game.version+" von Felix Eckert", 2, 1+g.getFontMetrics().getHeight()*2);
 		
 		drawInventory(g);
@@ -104,12 +107,12 @@ public class PlayingState implements IState {
                 int yLbl = row - half;
                 int x = (int) (origin.x + xOff * (col * 2 + 1 - cols));
                 int y = (int) (origin.y + yOff * (row - half) * 3);
-
+                
                 // Überprüfen ob es ein Land oder eine Wasser Landschaft sein sollte
                 if (row == 0 || row+1 == size || col == 0 || col+1 == cols) {
-                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, 0x3498db); 
+                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, 0x3498db, -1); 
                 } else {
-                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()]);
+                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()], map[row+col].getType());
                 	if (map[row+col].getType() == 1) {
                 		drawIcon(g, Icons.CITY, x, y, 48);
                 	}
@@ -118,10 +121,21 @@ public class PlayingState implements IState {
         }
 	}
 	
-	public void drawHex(Graphics g, int posX, int posY, int x, int y, int r, int feld, int color) {
+	public void drawHex(Graphics g, int posX, int posY, int x, int y, int r, int feld, int color, int type) {
 		Graphics2D g2d = (Graphics2D) g;
 
         DynHexagon hex = new DynHexagon(x, y, r);
+        
+        Rectangle rec = new Rectangle(mousePressX, mousePressY, 1, 1);
+        
+        if (rec.intersects(hex.getBounds())) {
+        	if (type == 1) {
+        		System.out.println("Stadt!");
+        	}
+        	
+            mousePressX = 0;
+            mousePressY = 0;
+        }
         
         hex.draw(g2d, x, y, 0, color, true);
         hex.draw(g2d, x, y, 2, 0x000000, false);
@@ -164,5 +178,11 @@ public class PlayingState implements IState {
 	@Override
 	public void update() {		
 		stateAliveTicks++;
+	}
+	
+	@Override
+	public void mousePressed(int x, int y) {
+		this.mousePressX = x;
+		this.mousePressY = y;
 	}
 }

@@ -2,7 +2,7 @@ package de.hexagonsoftware.svc;
 
 public class Main {
 	public static void main(String[] args) {
-		System.out.println("Die Siedler von Catan: Lokale Java Implementation von Felix Eckert");
+		System.out.println("Siedler: Java LAN Strategie Spiel von Felix Eckert");
 		System.out.println("==================================================================\n");
 		
 		int c = 0;
