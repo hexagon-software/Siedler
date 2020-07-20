@@ -11,6 +11,10 @@ public class InventoriedIronResource extends InventoriedResource{
 		this.amount += amount;
 	}
 	
+	public void reduceAmount(int amount) {
+		this.amount -= amount;
+	}
+	
 	public int getAmount() { return this.amount; }
 	public IResource getResource() { return Resources.STONE; }
 	public String getName() { return "Iron"; }

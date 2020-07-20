@@ -25,4 +25,21 @@ public class PlayerResources {
 	}
 	
 	public HashMap<String, InventoriedResource> getInventory() { return this.inventory; }
+
+	public boolean hasResource(String name) {
+		if (inventory.containsKey(name)) {
+			if (inventory.get(name).getAmount() > 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	public void reduceResource(String name, int amount) {
+		if (inventory.containsKey(name)) {
+			inventory.get(name).reduceAmount(amount);
+		}
+	}
 }

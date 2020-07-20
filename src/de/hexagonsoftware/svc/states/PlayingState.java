@@ -110,10 +110,10 @@ public class PlayingState implements IState {
                 
                 // Überprüfen ob es ein Land oder eine Wasser Landschaft sein sollte
                 if (row == 0 || row+1 == size || col == 0 || col+1 == cols) {
-                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, 0x3498db, -1); 
+                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, 0x3498db, -1, map[row+col]); 
                 } else {
-                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()], map[row+col].getType());
-                	if (map[row+col].getType() == 1) {
+                	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()], map[row+col].getType(), map[row+col]);
+                	if (map[row+col].hasBuilding(new CityBuilding(x, y))) {
                 		drawIcon(g, Icons.CITY, x, y, 48);
                 	}
                 }
@@ -121,7 +121,7 @@ public class PlayingState implements IState {
         }
 	}
 	
-	public void drawHex(Graphics g, int posX, int posY, int x, int y, int r, int feld, int color, int type) {
+	public void drawHex(Graphics g, int posX, int posY, int x, int y, int r, int feld, int color, int type, Tile tile) {
 		Graphics2D g2d = (Graphics2D) g;
 
         DynHexagon hex = new DynHexagon(x, y, r);
@@ -130,7 +130,11 @@ public class PlayingState implements IState {
         
         if (rec.intersects(hex.getBounds())) {
         	if (type == 1) {
-        		System.out.println("Stadt!");
+        		if (pRes.hasResource("WOOD") && pRes.hasResource("STONE")) {
+        			tile.addBuilding(new CityBuilding(x, y));
+        			pRes.reduceResource("WOOD", 1);
+        			pRes.reduceResource("STONE", 1);
+        		}
         	}
         	
             mousePressX = 0;
