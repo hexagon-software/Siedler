@@ -5,7 +5,19 @@ public class Main {
 		System.out.println("Die Siedler von Catan: Lokale Java Implementation von Felix Eckert");
 		System.out.println("==================================================================\n");
 		
-		Game game = new Game();
+		int c = 0;
+		int size = 7;
+		for (String s : args) {
+			if (s.matches("size")) {
+				size = Integer.parseInt(args[c+1]);
+			}
+			
+			System.out.println(s);
+			
+			c++;
+		}
+		
+		Game game = new Game(size);
 		game.start();
 	}
 }

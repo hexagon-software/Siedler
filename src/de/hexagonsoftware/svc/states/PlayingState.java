@@ -5,11 +5,19 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.hexagonsoftware.svc.Game;
 import de.hexagonsoftware.svc.Tile;
+import de.hexagonsoftware.svc.icons.IIcon;
+import de.hexagonsoftware.svc.icons.Icons;
 import de.hexagonsoftware.svc.polys.DynHexagon;
+import de.hexagonsoftware.svc.states.playing.buildings.Buildings;
+import de.hexagonsoftware.svc.states.playing.buildings.CityBuilding;
+import de.hexagonsoftware.svc.states.playing.resources.InventoriedResource;
+import de.hexagonsoftware.svc.states.playing.resources.PlayerResources;
+import de.hexagonsoftware.svc.states.playing.resources.Resources;
 
 /**
  * PlayingState (Spiel State)
@@ -20,23 +28,42 @@ import de.hexagonsoftware.svc.polys.DynHexagon;
  * @author Felix Eckert
  * */
 public class PlayingState implements IState {
-	private Game game;
-	private int size = 7;
+	private int stateAliveTicks = 0;
 	
-	private Tile[] map = new Tile[size*size]; // Die Map bestehend aus Tile instanzen
+	private Game game;
+	private int size;
+	
+	private Tile[] map; // Die Map bestehend aus Tile instanzen
 	private int[] colors = new int[] {0xf1c40f, 0x2ecc71, 0x95a5a6}; // Farben für die verschiedenen Felder
+	
+	public Resources res;
+	private PlayerResources pRes;
+	private Buildings buildings;
 	
 	public PlayingState(Game game) {
 		this.game = game;
+		this.size = game.getSize();
+		this.map = new Tile[size*size];
 		System.out.println("[SVC-client][INFO] Generiere Map...");
 		
 		// Map Generieren
-		for (int x = 0; x < size-2; x++) {
-			for (int y = 0; y < size-2; y++) {
+		for (int x = 0; x < this.size-2; x++) {
+			for (int y = 0; y < this.size-2; y++) {
 				int type = ThreadLocalRandom.current().nextInt(3);
 				map[x+y] = new Tile(x, y, type);
 			}
 		}
+		
+		System.out.println("[SVC-client][INFO] Füge Resourcen Hinzu...");
+		res = new Resources();
+		
+		System.out.println("[SVC-client][INFO] Initialisiere Spieler...");
+		// Das Spieler Inventar mit Grund Resourcen Intialisieren
+		this.pRes = new PlayerResources(this);
+		this.pRes.addResource("STONE", 1);
+		this.pRes.addResource("WOOD", 1);
+		
+		this.buildings = new Buildings();
 	}
 	
 	@Override
@@ -50,7 +77,9 @@ public class PlayingState implements IState {
 		g.setColor(Color.BLACK);
 		g.setFont(new Font("Courier New", Font.BOLD, 25));
 		g.drawString("\"Die Siedler von Catan\" in Java", 1, 1+g.getFontMetrics().getHeight());
-		g.drawString("Version 0.1.0 von Felix Eckert", 2, 1+g.getFontMetrics().getHeight()*2);
+		g.drawString("Version "+game.version+" von Felix Eckert", 2, 1+g.getFontMetrics().getHeight()*2);
+		
+		drawInventory(g);
 	}
 	
 	/**
@@ -81,6 +110,9 @@ public class PlayingState implements IState {
                 	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, 0x3498db); 
                 } else {
                 	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()]);
+                	if (map[row+col].getType() == 1) {
+                		drawIcon(g, Icons.CITY, x, y, 48);
+                	}
                 }
             }
         }
@@ -96,9 +128,41 @@ public class PlayingState implements IState {
         g.setColor(Color.DARK_GRAY);
         int feldX = x- (int)g.getFontMetrics().getStringBounds(String.valueOf(feld), g).getWidth()/2;
         g.setFont(new Font("Courier New", Font.ITALIC, 18));
-        g.drawString(String.valueOf(feld), feldX, y);
+        g.drawString(String.valueOf(feld), x, y);
 	}
 
+	public void drawIcon(Graphics g, IIcon icon, int x, int y, int scale) {
+		Color color = g.getColor();
+		
+		g.drawImage(icon.getImage(), x-scale, y-scale, scale, scale, null);
+		
+		g.setColor(color);
+	}
+	
+	/**
+	 * Zeichnet das Inventar des Spielers
+	 * */
+	private void drawInventory(Graphics g) {
+		HashMap<String, InventoriedResource> inventory = pRes.getInventory();
+		String[] invList = new String[inventory.size()];
+		
+		int c = 0;
+		for (Object o : inventory.keySet().toArray()) {
+			InventoriedResource res = inventory.get(o);
+			invList[c] = res.getName()+": "+res.getAmount();
+			
+			c++;
+		}
+		
+		for (int i = 0; i < invList.length; i++) {
+			int x = (game.getEngine().getHGE().getGameWindow().getWidth()) - (int) g.getFontMetrics().
+					getStringBounds(invList[i], g).getWidth();
+			g.drawString(invList[i], x, 1+(g.getFontMetrics().getHeight()*(i+1)));
+		}
+	}
+	
 	@Override
-	public void update() {}
+	public void update() {		
+		stateAliveTicks++;
+	}
 }
