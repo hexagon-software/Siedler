@@ -4,21 +4,21 @@ import de.hexagonsoftware.svc.icons.IIcon;
 import de.hexagonsoftware.svc.icons.Icons;
 import de.hexagonsoftware.svc.states.playing.resources.PlayerResources;
 
-public class CityBuilding implements IBuilding {
+public class QuarryBuilding implements IBuilding {
 	private int[] coordinates;
 	
-	public CityBuilding(int x, int y) {
+	public QuarryBuilding(int x, int y) {
 		this.coordinates = new int[] {x, y};
 	}
 	
 	@Override
 	public String getName() {
-		return "City";
+		return "Quarry";
 	}
 
 	@Override
 	public IIcon getIcon() {
-		return Icons.CITY;
+		return Icons.QUARRY;
 	}
 
 	@Override
@@ -29,4 +29,5 @@ public class CityBuilding implements IBuilding {
 		pRes.reduceResource("WOOD", 1);
 		pRes.reduceResource("STONE", 1);
 	}
+	
 }

@@ -16,6 +16,7 @@ import de.hexagonsoftware.svc.icons.Icons;
 import de.hexagonsoftware.svc.polys.DynHexagon;
 import de.hexagonsoftware.svc.states.playing.buildings.Buildings;
 import de.hexagonsoftware.svc.states.playing.buildings.CityBuilding;
+import de.hexagonsoftware.svc.states.playing.buildings.QuarryBuilding;
 import de.hexagonsoftware.svc.states.playing.resources.InventoriedResource;
 import de.hexagonsoftware.svc.states.playing.resources.PlayerResources;
 import de.hexagonsoftware.svc.states.playing.resources.Resources;
@@ -39,6 +40,7 @@ public class PlayingState implements IState {
 	
 	public Resources res;
 	private PlayerResources pRes;
+	
 	private Buildings buildings;
 	
 	public int mousePressX, mousePressY = 0;
@@ -63,8 +65,8 @@ public class PlayingState implements IState {
 		System.out.println("[SVC-client][INFO] Initialisiere Spieler...");
 		// Das Spieler Inventar mit Grund Resourcen Intialisieren
 		this.pRes = new PlayerResources(this);
-		this.pRes.addResource("STONE", 1);
-		this.pRes.addResource("WOOD", 1);
+		this.pRes.addResource("STONE", 2);
+		this.pRes.addResource("WOOD", 2);
 		
 		this.buildings = new Buildings();
 	}
@@ -115,6 +117,8 @@ public class PlayingState implements IState {
                 	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()], map[row+col].getType(), map[row+col]);
                 	if (map[row+col].hasBuilding(new CityBuilding(x, y))) {
                 		drawIcon(g, Icons.CITY, map[row+col].getCvsX(), map[row+col].getCvsY(), 48);
+                	} else if (map[row+col].hasBuilding(new QuarryBuilding(x, y))) {
+                		drawIcon(g, Icons.QUARRY, map[row+col].getCvsX(), map[row+col].getCvsY(), 48);
                 	}
                 }
             }
@@ -131,9 +135,15 @@ public class PlayingState implements IState {
         if (rec.intersects(hex.getBounds())) {
         	if (type == 1) {
         		if (pRes.hasResource("WOOD") && pRes.hasResource("STONE")) {
-        			tile.addBuilding(new CityBuilding(x, y));
-        			pRes.reduceResource("WOOD", 1);
-        			pRes.reduceResource("STONE", 1);
+        			CityBuilding build = new CityBuilding(x, y); 
+        			build.cost(pRes);
+        			tile.addBuilding(build);
+        		}
+        	} else if (type == 2) {
+        		if (pRes.hasResource("WOOD") && pRes.hasResource("STONE")) {
+        			QuarryBuilding build = new QuarryBuilding(x, y);
+        			build.cost(pRes);
+        			tile.addBuilding(build);
         		}
         	}
         	
@@ -188,13 +198,16 @@ public class PlayingState implements IState {
 	
 	@Override
 	public void update() {
-		for (Tile t : map) {
-			if (t == null)
-				continue; 
+		if (stateAliveTicks % 10000 == 0) {
+			for (Tile t : map) {
+				if (t == null)
+					continue; 
 			
-			if (t.hasBuilding(new CityBuilding(t.getX(), t.getY()))) {
-				if (stateAliveTicks % 10000 == 0)
-					pRes.addResource("WOOD", 1);
+				if (t.hasBuilding(new CityBuilding(t.getX(), t.getY()))) {
+						pRes.addResource("WOOD", 1);
+				} else if (t.hasBuilding(new QuarryBuilding(t.getX(), t.getY()))) {
+						pRes.addResource("STONE", 1);
+				}
 			}
 		}
 		
