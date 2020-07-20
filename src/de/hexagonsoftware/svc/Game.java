@@ -31,7 +31,7 @@ public class Game implements IGame {
 	
 	private StateMachine stateMachine;
 	
-	public String version = "0.1.0 ALPHA";
+	public String version = "0.2.0 ALPHA";
 	public int size;
 	
 	public Game(int size) {
@@ -58,10 +58,13 @@ public class Game implements IGame {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("[SVC-client][INFO] Spiel vertig Intialisiert!");
+		System.out.println("[SVC-client][INFO] Spiel Intialisiert!");
+		int tick = 0;
 		while (true) {
 			engine.execGameLoop();
 			update();
+			
+			tick++;
 		}
 	}
 	
@@ -80,4 +83,8 @@ public class Game implements IGame {
 	
 	public Engine getEngine() { return this.engine; }
 	public int getSize() { return this.size; }
+
+	public void stop() {
+		t.interrupt();
+	}
 }
