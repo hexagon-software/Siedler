@@ -33,7 +33,7 @@ public class Game implements IGame {
 	
 	private StateMachine stateMachine;
 	
-	public String version = "0.2.0 ALPHA";
+	public String version = "0.3.0 ALPHA";
 	public int size;
 	
 	public Game(int size) {
@@ -42,7 +42,7 @@ public class Game implements IGame {
 		this.engine.getHGE().getGameWindow().addKeyListener(new Keyboard(this));
 		this.size = size;
 		System.out.println("[SVC-client][INFO] (engine-info) "+engine.getInfo());	
-		System.out.println("[SVC-client][INFO] Starte Spiel...");
+		System.out.println("[SVC-client][INFO] Starting...");
 		
 		// State Machine
 		this.stateMachine = new StateMachine(this);
@@ -61,7 +61,7 @@ public class Game implements IGame {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("[SVC-client][INFO] Spiel Intialisiert!");
+		System.out.println("[SVC-client][INFO] Game Initialised!");
 		int tick = 0;
 		while (true) {
 			engine.execGameLoop();

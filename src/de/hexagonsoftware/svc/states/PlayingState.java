@@ -54,7 +54,7 @@ public class PlayingState implements IState {
 		this.game = game;
 		this.size = game.getSize();
 		this.map = new Tile[size*size];
-		System.out.println("[SVC-client][INFO] Generiere Map...");
+		System.out.println("[SVC-client][INFO] Generating Map...");
 		
 		// Map Generation
 		// It's really not good at the moment. Im gonna change it later on.
@@ -65,10 +65,10 @@ public class PlayingState implements IState {
 			}
 		}
 		
-		System.out.println("[SVC-client][INFO] Füge Resourcen Hinzu...");
+		System.out.println("[SVC-client][INFO] Adding Resources...");
 		res = new Resources(); // Initialise the Resource "Registry"
 		
-		System.out.println("[SVC-client][INFO] Initialisiere Spieler...");
+		System.out.println("[SVC-client][INFO] Initialising Player...");
 		// Initialise the Player's Inventory with basic Items
 		this.pRes = new PlayerResources(this);
 		this.pRes.addResource("STONE", 2);
@@ -89,7 +89,7 @@ public class PlayingState implements IState {
 		g.setColor(Color.BLACK);
 		g.setFont(new Font("Courier New", Font.BOLD, 25));
 		g.drawString("\"Siedler\" (Java) ", 1, 1+g.getFontMetrics().getHeight());
-		g.drawString("Version "+game.version+" von Felix Eckert", 2, 1+g.getFontMetrics().getHeight()*2);
+		g.drawString("Version "+game.version+" by Felix Eckert", 2, 1+g.getFontMetrics().getHeight()*2);
 		
 		// Render the Resources the Player currently has
 		int lines = drawInventory(g)/2;

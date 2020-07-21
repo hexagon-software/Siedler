@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
 	public static void main(String[] args) {
-		System.out.println("Siedler: Java LAN Strategie Spiel von Felix Eckert");
+		System.out.println("Siedler: (not really) A \" Strategy \" game by Felix Eckert");
 		System.out.println("==================================================================\n");
 		
 		int c = 0;
