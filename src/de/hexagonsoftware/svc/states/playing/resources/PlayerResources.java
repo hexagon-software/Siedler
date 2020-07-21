@@ -42,4 +42,12 @@ public class PlayerResources {
 			inventory.get(name).reduceAmount(amount);
 		}
 	}
+
+	public int getResourceAmount(String name) {
+		if (inventory.containsKey(name)) {
+			return inventory.get(name).getAmount();
+		}
+		
+		return -1;
+	}
 }

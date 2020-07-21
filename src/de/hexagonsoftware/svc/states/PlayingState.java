@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -17,7 +18,9 @@ import de.hexagonsoftware.svc.icons.Icons;
 import de.hexagonsoftware.svc.polys.DynHexagon;
 import de.hexagonsoftware.svc.states.playing.buildings.Buildings;
 import de.hexagonsoftware.svc.states.playing.buildings.CityBuilding;
+import de.hexagonsoftware.svc.states.playing.buildings.IronMineBuilding;
 import de.hexagonsoftware.svc.states.playing.buildings.QuarryBuilding;
+import de.hexagonsoftware.svc.states.playing.buildings.SawmillBuilding;
 import de.hexagonsoftware.svc.states.playing.resources.InventoriedResource;
 import de.hexagonsoftware.svc.states.playing.resources.PlayerResources;
 import de.hexagonsoftware.svc.states.playing.resources.Resources;
@@ -37,7 +40,7 @@ public class PlayingState implements IState {
 	private int size;
 	
 	private Tile[] map; // Array of Tiles which make up the map
-	private int[] colors = new int[] {0xf1c40f, 0x2ecc71, 0x95a5a6}; // List of Colors with their position corresponding to their Tile ID
+	private int[] colors = new int[] {0xf1c40f, 0x2ecc71, 0x7f8c8d, 0x27ae60, 0x95a5a6}; // List of Colors with their position corresponding to their Tile ID
 	
 	public Resources res; // Game Resources (Stone, Wood etc.)
 	private PlayerResources pRes; // The players Inventory
@@ -45,6 +48,7 @@ public class PlayingState implements IState {
 	private Buildings buildings;
 	
 	public int mousePressX, mousePressY = 0; // Stores the location of the last mouse press
+	public char lastKeyChar = ' ';
 	
 	public PlayingState(Game game) {
 		this.game = game;
@@ -56,7 +60,7 @@ public class PlayingState implements IState {
 		// It's really not good at the moment. Im gonna change it later on.
 		for (int x = 0; x < this.size-2; x++) {
 			for (int y = 0; y < this.size-2; y++) {
-				int type = ThreadLocalRandom.current().nextInt(3);
+				int type = ThreadLocalRandom.current().nextInt(5);
 				map[x+y] = new Tile(x, y, type);
 			}
 		}
@@ -93,7 +97,7 @@ public class PlayingState implements IState {
 		
 		// Render information about Buildings
 		String[] infoLines = new String[] {
-				"",
+				"\n",
 				"Building Costs:",
 				"Settlement: 1 Stone, 1 Wood",
 				"Quarry: 1 Stone, 1 Wood"
@@ -146,9 +150,19 @@ public class PlayingState implements IState {
                 } else {
                 	drawHex(g, xLbl, yLbl, x, y, radius, feldCount, colors[map[row+col].getType()], map[row+col].getType(), map[row+col]);
                 	if (map[row+col].hasBuilding(new CityBuilding(x, y))) {
-                		drawIcon(g, Icons.CITY, map[row+col].getCvsX(), map[row+col].getCvsY(), 48);
+                		drawIcon(g, Icons.CITY, map[row+col].getCvsX(), map[row+col].getCvsY(), Icons.CITY.getImage().getWidth(), Icons.CITY.getImage().getHeight());
                 	} else if (map[row+col].hasBuilding(new QuarryBuilding(x, y))) {
-                		drawIcon(g, Icons.QUARRY, map[row+col].getCvsX(), map[row+col].getCvsY(), 48);
+                		drawIcon(g, Icons.QUARRY, map[row+col].getCvsX(),
+                				map[row+col].getCvsY(), Icons.QUARRY.getImage().getWidth() / 4, 
+                				Icons.QUARRY.getImage().getHeight() / 4);
+                	} else if (map[row+col].hasBuilding(new SawmillBuilding(x, y))) {
+                		drawIcon(g, Icons.SAWMILL, map[row+col].getCvsX(),
+                				map[row+col].getCvsY(), Icons.SAWMILL.getImage().getWidth() / 4, 
+                				Icons.SAWMILL.getImage().getHeight() / 4);
+                	} else if (map[row+col].hasBuilding(new IronMineBuilding(x, y))) {
+                		drawIcon(g, Icons.IRON_MINE, map[row+col].getCvsX(),
+                				map[row+col].getCvsY(), Icons.IRON_MINE.getImage().getWidth() / 4, 
+                				Icons.IRON_MINE.getImage().getHeight() / 4);
                 	}
                 }
             }
@@ -164,7 +178,7 @@ public class PlayingState implements IState {
         
         if (rec.intersects(hex.getBounds())) {
         	if (type == 1) {
-        		if (pRes.hasResource("WOOD") && pRes.hasResource("STONE")) {
+        		if (pRes.getResourceAmount("WOOD") >= 2 && pRes.getResourceAmount("STONE") >= 2) {
         			CityBuilding build = new CityBuilding(x, y); 
         			build.cost(pRes);
         			tile.addBuilding(build);
@@ -175,6 +189,20 @@ public class PlayingState implements IState {
         			build.cost(pRes);
         			tile.addBuilding(build);
         		}
+        	} else if (type == 3) {
+        		if (pRes.hasResource("WOOD") && pRes.hasResource("STONE")) {
+            		SawmillBuilding build = new SawmillBuilding(x, y);
+        			build.cost(pRes);
+        			tile.addBuilding(build);
+        		}
+        	} else if (type == 4) {
+        		if (pRes.getResourceAmount("WOOD") >= 2 && pRes.getResourceAmount("STONE") >= 3 && pRes.hasResource("CASH")) {
+        			IronMineBuilding build = new IronMineBuilding(x, y);
+        			build.cost(pRes);
+        			tile.addBuilding(build);
+        			System.out.println("HEY");
+        		}
+        		System.out.println("HEY");
         	}
         	
             mousePressX = 0;
@@ -196,10 +224,10 @@ public class PlayingState implements IState {
        // System.out.println("a");
 	}
 
-	public void drawIcon(Graphics g, IIcon icon, int x, int y, int scale) {
+	public void drawIcon(Graphics g, IIcon icon, int x, int y, int scaleX, int scaleY) {
 		Color color = g.getColor();
 		
-		g.drawImage(icon.getImage(), x-scale, y-scale, scale, scale, null);
+		g.drawImage(icon.getImage(), x-scaleX, y-scaleY, scaleX, scaleY, null);
 		
 		g.setColor(color);
 	}
@@ -246,9 +274,13 @@ public class PlayingState implements IState {
 					continue; 
 			
 				if (t.hasBuilding(new CityBuilding(t.getX(), t.getY()))) {
-						pRes.addResource("WOOD", 1);
+						pRes.addResource("CASH", 1);
 				} else if (t.hasBuilding(new QuarryBuilding(t.getX(), t.getY()))) {
 						pRes.addResource("STONE", 1);
+				} else if (t.hasBuilding(new SawmillBuilding(t.getX(), t.getY()))) {
+						pRes.addResource("WOOD", 1);
+				} else if (t.hasBuilding(new IronMineBuilding(t.getX(), t.getY()))) {
+						pRes.addResource("IRON", 1);
 				}
 			}
 		}
@@ -260,5 +292,15 @@ public class PlayingState implements IState {
 	public void mousePressed(int x, int y) {
 		this.mousePressX = x;
 		this.mousePressY = y;
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		this.lastKeyChar = e.getKeyChar();
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		this.lastKeyChar = ' ';
 	}
 }

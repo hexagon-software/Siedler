@@ -27,6 +27,12 @@ public class Main {
 			if (!in.matches("")) {
 				try {
 					size = Integer.parseInt(in);
+					if (size < 7) {
+						System.out.println("Size may not be smaller than 7!");
+						sizeNotSet = true;
+						continue;
+					}
+					
 					sizeNotSet = false;
 				} catch (Exception e) {
 					sizeNotSet = true;

@@ -4,21 +4,21 @@ import de.hexagonsoftware.svc.icons.IIcon;
 import de.hexagonsoftware.svc.icons.Icons;
 import de.hexagonsoftware.svc.states.playing.resources.PlayerResources;
 
-public class CityBuilding implements IBuilding {
+public class SawmillBuilding implements IBuilding {
 	private int[] coordinates;
 	
-	public CityBuilding(int x, int y) {
+	public SawmillBuilding(int x, int y) {
 		this.coordinates = new int[] {x, y};
 	}
 	
 	@Override
 	public String getName() {
-		return "City";
+		return "Sawmill";
 	}
 
 	@Override
 	public IIcon getIcon() {
-		return Icons.CITY;
+		return Icons.QUARRY;
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class CityBuilding implements IBuilding {
 
 	@Override
 	public void cost(PlayerResources pRes) {
-		pRes.reduceResource("WOOD", 2);
-		pRes.reduceResource("STONE", 2);
+		pRes.reduceResource("WOOD", 1);
+		pRes.reduceResource("STONE", 1);
 	}
 }

@@ -9,6 +9,7 @@ public class Resources {
 		invRes.put("STONE", new InventoriedStoneResource(0));
 		invRes.put("IRON", new InventoriedIronResource(0));
 		invRes.put("WOOD", new InventoriedWoodResource(0));
+		invRes.put("CASH", new InventoriedCashResource(0));
 	}
 	
 	public static IResource STONE = new StoneResource();

@@ -6,11 +6,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.ThreadLocalRandom;
 
 import de.hexagonsoftware.svc.core.Engine;
 import de.hexagonsoftware.svc.core.IGame;
+import de.hexagonsoftware.svc.input.Keyboard;
 import de.hexagonsoftware.svc.input.Mouse;
 import de.hexagonsoftware.svc.polys.DynHexagon;
 import de.hexagonsoftware.svc.polys.Hexagon;
@@ -37,6 +39,7 @@ public class Game implements IGame {
 	public Game(int size) {
 		this.engine = new Engine(this);
 		this.engine.getHGE().getGameWindow().addMouseListener(new Mouse(this));
+		this.engine.getHGE().getGameWindow().addKeyListener(new Keyboard(this));
 		this.size = size;
 		System.out.println("[SVC-client][INFO] (engine-info) "+engine.getInfo());	
 		System.out.println("[SVC-client][INFO] Starte Spiel...");
@@ -79,6 +82,14 @@ public class Game implements IGame {
 	
 	public void handleMouse(MouseEvent e) {
 		stateMachine.activeState.mousePressed(e.getX(), e.getY());
+	}
+	
+	public void handleKeyDown(KeyEvent e) {
+		stateMachine.activeState.keyPressed(e);
+	}
+	
+	public void handleKeyUp(KeyEvent e) {
+		stateMachine.activeState.keyReleased(e);
 	}
 	
 	public Engine getEngine() { return this.engine; }

@@ -1,0 +1,14 @@
+if (type == 1) {
+        			if (pRes.hasResource("WOOD") && pRes.hasResource("STONE")) {
+        				CityBuilding build = new CityBuilding(x, y); 
+        				build.cost(pRes);
+        				tile.addBuilding(build);
+        				buildChoiceActive = false;
+        			}
+        		} else if (type == 2) {
+        			if (pRes.hasResource("WOOD") && pRes.hasResource("STONE")) {
+        				QuarryBuilding build = new QuarryBuilding(x, y);
+        				build.cost(pRes);
+        				tile.addBuilding(build);
+        			}
+        		}
