@@ -2,6 +2,7 @@ package de.hexagonsoftware.svc.polys;
 
 import java.awt.Polygon;
 
+@Deprecated
 public class Hexagon extends Polygon {
 	private static final long serialVersionUID = 1L;
 
